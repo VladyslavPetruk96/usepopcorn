@@ -35,8 +35,6 @@ const tempWatchedData = [
   },
 ];
 
-const KEY = 'a36503af';
-
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState(tempWatchedData);
@@ -59,7 +57,7 @@ export default function App() {
         setIsLoading(true);
         setError('');
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&s=${query}`
         );
 
         if (!res.ok)
