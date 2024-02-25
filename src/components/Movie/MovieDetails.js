@@ -3,12 +3,24 @@ import { useEffect, useState } from 'react';
 import StarRating from '../Ui/StarRating';
 import Loader from '../Ui/Loader';
 
-export default function MovieDetails({ selectedId, onCloseMovie }) {
+export default function MovieDetails({
+  selectedId,
+  onCloseMovie,
+  onAddWatched,
+  watched,
+}) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState('');
+
+  const isWatched = watched.map(movie => movie.imdbID).includes(selectedId);
+  const watchedUserRating = watched.find(
+    movie => movie.imdbID === selectedId
+  )?.userRating;
 
   const {
     Title: title,
+    Year: year,
     Poster: poster,
     Runtime: runtime,
     imdbRating,
@@ -31,6 +43,20 @@ export default function MovieDetails({ selectedId, onCloseMovie }) {
     }
     getMovieDetails();
   }, [selectedId]);
+
+  function handleAdd() {
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(' ').at(0)),
+      userRating,
+    };
+    onAddWatched(newWatchedMovie);
+    onCloseMovie();
+  }
 
   return (
     <div className="details">
@@ -58,7 +84,24 @@ export default function MovieDetails({ selectedId, onCloseMovie }) {
 
           <section>
             <div className="rating">
-              <StarRating maxRaiting={10} size={24} />
+              {!isWatched ? (
+                <>
+                  <StarRating
+                    maxRaiting={10}
+                    size={24}
+                    onSetRating={setUserRating}
+                  />
+                  {userRating && (
+                    <button className="btn-add" onClick={handleAdd}>
+                      + Add to list
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>
+                  You rated this movie {watchedUserRating} <span>⭐️</span>
+                </p>
+              )}
             </div>
             <p>
               <em>{plot}</em>
