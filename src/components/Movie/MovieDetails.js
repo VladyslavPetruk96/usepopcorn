@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 
 import StarRating from '../Ui/StarRating';
 import Loader from '../Ui/Loader';
+import { useKey } from '../../hooks/useKey';
+
+const KEY = 'a36503af';
 
 export default function MovieDetails({
   selectedId,
@@ -35,7 +38,7 @@ export default function MovieDetails({
     async function getMovieDetails() {
       setIsLoading(true);
       const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${process.env.REACT_APP_API_KEY}&i=${selectedId}`
+        `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
       );
       const data = await res.json();
       setMovie(data);
@@ -51,16 +54,7 @@ export default function MovieDetails({
     return () => (document.title = 'usePopcorn');
   }, [title]);
 
-  useEffect(() => {
-    function callback(e) {
-      if (e.code === 'Escape') {
-        onCloseMovie();
-      }
-    }
-    document.addEventListener('keydown', callback);
-
-    return () => document.removeEventListener('keydown', callback);
-  }, [onCloseMovie]);
+  useKey('Escape', onCloseMovie);
 
   function handleAdd() {
     const newWatchedMovie = {
